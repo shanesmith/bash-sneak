@@ -127,7 +127,7 @@ __sneak_backward() {
   __sneak "backward"
 }
 
-bind -x "\"${SNEAK_BINDING_FORWARD-\C-y}\": __sneak_forward"
+bind -x "\"${SNEAK_BINDING_FORWARD-\C-g}\": __sneak_forward"
 
 bind -x "\"${SNEAK_BINDING_BACKWARD-\C-t}\": __sneak_backward"
 

@@ -10,7 +10,7 @@ from the excellent [vim-sneak] plugin.
 Usage
 -----
 
-Use `Ctrl-Y` or `Ctrl-T` followed by two character to perform a forwards or
+Use `Ctrl-G` or `Ctrl-T` followed by two character to perform a forwards or
 backwards sneak, the cursor will be moved to the next or previous instance of
 those two characters. To repeat the same sneak double up and hit the same
 trigger twice. To quit the sneak prompt hit `esc`.
@@ -29,7 +29,7 @@ $ echo "99 bottles of beer on the wall, 99 bottles of |beer, take one down..."
 $ echo "99 bottles of |beer on the wall, 99 bottles of beer, take one down..."
                       ^
 
-# Now to redo the sneak but in the forwards direction press Ctrl-Y Ctrl-Y
+# Now to redo the sneak but in the forwards direction press Ctrl-G Ctrl-G
 $ echo "99 bottles of beer on the wall, 99 bottles of |beer, take one down..."
                                                       ^
 ```
@@ -77,7 +77,7 @@ Set the following bash variables to customize some options.
 > typed so far.
 
 
-`SNEAK_BINDING_FORWARD="\C-y"`
+`SNEAK_BINDING_FORWARD="\C-g"`
 `SNEAK_BINDING_BACKWARD="\C-t"`
 
 > Key bindings for triggering sneak, see `help bind` for more information.
