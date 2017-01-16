@@ -21,14 +21,10 @@ __sneak() {
   tput rc
 
   # move cursor forward past prompt
-  if [[ "${#prompt}" -gt 0 ]]; then
-    tput cuf ${#prompt}
-  fi
+  [[ "${#prompt}" -gt 0 ]] && tput cuf "${#prompt}"
 
-  if [[ "$READLINE_POINT" -gt 0 ]]; then
-    # move cursor to current point
-    tput cuf $READLINE_POINT
-  fi
+  # move cursor to current point
+  [[ "$READLINE_POINT" -gt 0 ]] && tput cuf "$READLINE_POINT"
 
   while true; do
 
@@ -36,30 +32,36 @@ __sneak() {
     read -rs -n1 key
 
     if [[ $? -ne 0 ]]; then
+      # something went wrong
       return
     fi
 
     case "$key" in
       $'\e')
+        # escape quits
         search=""
         break
         ;;
 
       $binding_char)
+        # doubling binding char redoes last search
         search="${__sneak_last_search}"
         break
         ;;
 
       "")
+        # ENTER does search with what we've got so far
         break
         ;;
 
       [[:print:]])
+        # only accept printable characters
         search="$search$key"
         ;;
     esac;
 
     if [[ "${#search}" -eq "${num_chars}" ]]; then
+      # we've got what we asked for, let's get down to business
       break
     fi
 
@@ -75,6 +77,7 @@ __sneak() {
     return
   fi
 
+  # save search
   __sneak_last_search="${search}"
 
   READLINE_POINT=$(
@@ -87,8 +90,8 @@ __sneak() {
           point += index(substr($0, point+2), search);
         }
         else {
-          str = substr($0, 0, point + 1)
           pos = 0
+          str = substr($0, 0, point + 1)
           while (i = index(substr(str, pos+1), search)) {
             pos += i
           }
@@ -102,9 +105,19 @@ __sneak() {
 }
 
 __sneak_get_bind_char() {
-  bind -X | awk -v direction="$1" '$0 ~ "__sneak_"direction { if ($1 ~ /^"\\C-[a-z]"/) printf "%s", substr($1, 5, 1) }' | od -An -d | xargs -I'{}' expr '{}' - 96 | xargs printf "%o" | xargs -I'{}' printf "%b" "\0{}"
+  # extract the letter (ie: "x" from "\C-x")
+  # get ASCII decimal code
+  # compute ASCII for for Ctrl-x
+  # convert to octal number
+  # print control character
+  # ...there's got to be a saner way...
+    bind -X \
+      | awk -v direction="$1" '$0 ~ "__sneak_"direction { if ($1 ~ /^"\\C-[a-z]"/) printf "%s", substr($1, 5, 1) }' \
+      | od -An -d \
+      | xargs -I'{}' expr '{}' - 96 \
+      | xargs printf "%o" \
+      | xargs -I'{}' printf "%b" "\0{}"
 }
-
 
 __sneak_forward() {
   __sneak "forward"

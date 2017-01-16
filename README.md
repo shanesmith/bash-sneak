@@ -13,7 +13,7 @@ Usage
 Use `Ctrl-Y` or `Ctrl-T` followed by two character to perform a forwards or
 backwards sneak, the cursor will be moved to the next or previous instance of
 those two characters. To repeat the same sneak double up and hit the same
-trigger twice.
+trigger twice. To quit the sneak prompt hit `esc`.
 
 
 ```sh
