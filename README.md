@@ -5,7 +5,7 @@ sneak.bash is a Bash readline binding to jump to a position in the current
 command line specified by two characters. The idea (and name...) is borrowed
 from the excellent [vim-sneak] plugin.
 
-![Demo](https://cloud.githubusercontent.com/assets/348425/21971042/ecb0ccac-db7a-11e6-9e52-d32cde18db2b.gif)
+![Demo](https://cloud.githubusercontent.com/assets/348425/22004869/10f3d84a-dc2d-11e6-9c5e-f56b550ae7cf.gif)
 
 Usage
 -----
