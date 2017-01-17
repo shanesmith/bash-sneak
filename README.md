@@ -41,13 +41,13 @@ Download `sneak.bash` somewhere and source it.
 
 ```sh
 # Download it
-wget https://raw.githubusercontent.com/shanesmith/bash-sneak/master/sneak.bash
+curl -L https://raw.githubusercontent.com/shanesmith/bash-sneak/master/sneak.bash -o ~/sneak.bash
 
 # Source it
-source ~/bin/sneak.bash
+source ~/sneak.bash
 
 # Use it
-echo "Golly this is a lng command, would hate to find a typo" [Ctrl-T ng]
+echo "Golly this is a lng command, would hate to find a typo" [Ctrl-T]ng
 ```
 
 You'll probably also want to source it in your `.bashrc`.
@@ -55,6 +55,13 @@ You'll probably also want to source it in your `.bashrc`.
 ```sh
 echo "source ~/sneak.bash" >> ~/.bashrc
 ```
+
+**Requirements**
+
+- Bash 4+
+
+Tested mainly on macOS, and minimally on both Ubuntu and Windows (Git Bash and
+subsystem Bash).
 
 Options
 -------
