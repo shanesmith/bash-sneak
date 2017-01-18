@@ -1,3 +1,7 @@
+if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
+  echo "sneak.bash requires Bash 4+, you currently have $BASH_VERSION" >&2
+fi
+
 declare __sneak_last_search
 
 __sneak() {
@@ -10,6 +14,14 @@ __sneak() {
   local num_chars="${SNEAK_NUM_CHARS:-2}"
 
   local binding_char=$(__sneak_get_bind_char "$direction")
+
+  if [[ "${BASH_VERSINFO[1]}" -le 2 ]]; then
+    # Bash <= 4.2
+    # move up one line
+    tput cuu1
+    # erase line
+    tput el
+  fi
 
   # save cursor (col 0)
   tput sc
@@ -73,6 +85,11 @@ __sneak() {
   # erase line
   tput el
 
+  if [[ "${BASH_VERSINFO[1]}" -le 3 ]]; then
+    # Bash <= 4.3
+    __sneak_old_bash_restore_prompt
+  fi
+
   if [[ -z "${search}" ]]; then
     return
   fi
@@ -104,15 +121,35 @@ __sneak() {
 
 }
 
+__sneak_old_bash_restore_prompt() {
+  local i
+
+  local numlines=$(echo "$PS1" | grep -o '\\n' | wc -l)
+
+  for (( i = 0; i < "$numlines"; i++ )); do
+    # move up one line
+    tput cuu1
+    # erase line
+    tput el
+  done
+}
+
 __sneak_get_bind_char() {
+  local uppercase_direction="$(echo "$1" | tr '[a-z]' '[A-Z]')"
+  local option_name="SNEAK_BINDING_${uppercase_direction}"
+  local option_value="${!option_name}"
+
+  if [[ ! "$option_value" =~ ^\\C-.$ ]]; then
+    return
+  fi
+
   # extract the letter (ie: "x" from "\C-x")
   # get ASCII decimal code
   # compute ASCII for for Ctrl-x
   # convert to octal number
   # print control character
-  # ...there's got to be a saner way...
-    bind -X \
-      | awk -v direction="$1" '$0 ~ "__sneak_"direction { if ($1 ~ /^"\\C-[a-z]"/) printf "%s", substr($1, 5, 1) }' \
+  # ...Bash 4.4 does allow for `qq="\\ct"; echo ${qq@E}` for expanding variables in the same way as $'...'
+  echo -n "${option_value:3:1}" \
       | od -An -d \
       | xargs -I'{}' expr '{}' - 96 \
       | xargs printf "%o" \
@@ -127,7 +164,7 @@ __sneak_backward() {
   __sneak "backward"
 }
 
-bind -x "\"${SNEAK_BINDING_FORWARD-\C-g}\": __sneak_forward"
+bind -x "\"${SNEAK_BINDING_FORWARD=\C-g}\": __sneak_forward"
 
-bind -x "\"${SNEAK_BINDING_BACKWARD-\C-t}\": __sneak_backward"
+bind -x "\"${SNEAK_BINDING_BACKWARD=\C-t}\": __sneak_backward"
 
