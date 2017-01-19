@@ -40,17 +40,26 @@ __sneak() {
 
   while true; do
 
+    local save_stty=$(stty -g)
+
+    # disable turning Ctrl-C into SIGINT
+    stty intr undef
+
     # read a single key
     read -rs -n1 key
 
-    if [[ $? -ne 0 ]]; then
-      # something went wrong
-      return
+    local read_success=$?
+
+    stty "$save_stty"
+
+    if [[ "$read_success" -ne 0 ]]; then
+      search=""
+      break
     fi
 
     case "$key" in
-      $'\e')
-        # escape quits
+      $'\e'|$'\cc')
+        # escape and ctrl-c quits
         search=""
         break
         ;;
