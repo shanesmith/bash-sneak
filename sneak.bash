@@ -153,12 +153,14 @@ __sneak_get_bind_char() {
   fi
 
   # extract the letter (ie: "x" from "\C-x")
+  # make sure it's lowercase
   # get ASCII decimal code
   # compute ASCII for for Ctrl-x
   # convert to octal number
   # print control character
   # ...Bash 4.4 does allow for `qq="\\ct"; echo ${qq@E}` for expanding variables in the same way as $'...'
   echo -n "${option_value:3:1}" \
+      | tr '[A-Z]' '[a-z]' \
       | od -An -d \
       | xargs -I'{}' expr '{}' - 96 \
       | xargs printf "%o" \
