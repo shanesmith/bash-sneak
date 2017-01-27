@@ -15,6 +15,14 @@ __sneak() {
 
   local binding_char=$(__sneak_get_bind_char "$direction")
 
+  local num_columns="$(tput cols)"
+
+  local prompt_cursor_col=$(( ${#prompt} + $READLINE_POINT ))
+
+  local prompt_cursor_row=$(( $prompt_cursor_col / $num_columns ))
+
+  prompt_cursor_col=$(( $prompt_cursor_col - ( $prompt_cursor_row * $num_columns ) ))
+
   if __sneak_bash_version "<=" "4.2"; then
     # move up one line
     tput cuu1
@@ -31,11 +39,9 @@ __sneak() {
   # restore cursor (col 0)
   tput rc
 
-  # move cursor forward past prompt
-  [[ "${#prompt}" -gt 0 ]] && tput cuf "${#prompt}"
+  [[ "$prompt_cursor_row" -gt 0 ]] && tput cud "$prompt_cursor_row"
 
-  # move cursor to current point
-  [[ "$READLINE_POINT" -gt 0 ]] && tput cuf "$READLINE_POINT"
+  [[ "$prompt_cursor_col" -gt 0 ]] && tput cuf "$prompt_cursor_col"
 
   while true; do
 
