@@ -15,8 +15,7 @@ __sneak() {
 
   local binding_char=$(__sneak_get_bind_char "$direction")
 
-  if [[ "${BASH_VERSINFO[1]}" -le 2 ]]; then
-    # Bash <= 4.2
+  if __sneak_bash_version "<=" "4.2"; then
     # move up one line
     tput cuu1
     # erase line
@@ -58,6 +57,7 @@ __sneak() {
     fi
 
     case "$key" in
+
       $'\e'|$'\cc')
         # escape and ctrl-c quits
         search=""
@@ -79,7 +79,8 @@ __sneak() {
         # only accept printable characters
         search="$search$key"
         ;;
-    esac;
+
+    esac
 
     if [[ "${#search}" -eq "${num_chars}" ]]; then
       # we've got what we asked for, let's get down to business
@@ -94,8 +95,7 @@ __sneak() {
   # erase line
   tput el
 
-  if [[ "${BASH_VERSINFO[1]}" -le 3 ]]; then
-    # Bash <= 4.3
+  if __sneak_bash_version "<=" 4.3; then
     __sneak_old_bash_restore_prompt
   fi
 
@@ -165,6 +165,38 @@ __sneak_get_bind_char() {
       | xargs -I'{}' expr '{}' - 96 \
       | xargs printf "%o" \
       | xargs -I'{}' printf "%b" "\0{}"
+}
+
+# Compares current BASH_VERSION, succeeds if true
+# Usage:  __sneak_bash_version "<" "4.4.5"
+__sneak_bash_version() {
+  local op="$1"
+
+  if [[ ! $op =~ \<=?|\>=?|!?==? ]]; then
+    echo "Invalid operator: $op"
+    return 2
+  fi
+
+  local comparison=$(echo "$2" | \
+    awk -F. \
+    -v major="${BASH_VERSINFO[0]}" \
+    -v minor="${BASH_VERSINFO[1]}" \
+    -v patch="${BASH_VERSINFO[2]}" \
+    '{
+      comp_version_number = sprintf("%03d%03d%03d", $1, $2, $3)
+      bash_version_number = sprintf("%03d%03d%03d", major, minor, patch)
+
+      if (bash_version_number < comp_version_number) print "<"
+      else if (bash_version_number > comp_version_number) print ">"
+      else print "="
+    }'
+  )
+
+  case "$comparison" in
+    "<") [[ $op =~ \<=?|!= ]]; return $? ;;
+    ">") [[ $op =~ \>=?|!= ]]; return $? ;;
+    "=") [[ $op =~ == ]]; return $? ;;
+  esac
 }
 
 __sneak_forward() {
