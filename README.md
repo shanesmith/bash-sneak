@@ -41,7 +41,7 @@ Download `sneak.bash` somewhere and source it.
 
 ```sh
 # Download it
-curl -L https://raw.githubusercontent.com/shanesmith/bash-sneak/master/sneak.bash -o ~/sneak.bash
+curl -L https://raw.githubusercontent.com/shanesmith/bash-sneak/v0.1.0/sneak.bash -o ~/sneak.bash
 
 # Source it
 source ~/sneak.bash
