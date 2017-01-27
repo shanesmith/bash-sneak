@@ -1,3 +1,5 @@
+SNEAK_VERSION="0.1.0"
+
 if [[ ${BASH_VERSINFO[0]} -lt 4 ]]; then
   echo "sneak.bash requires Bash 4+, you currently have $BASH_VERSION" >&2
 fi
