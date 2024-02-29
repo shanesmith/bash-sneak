@@ -1,0 +1,35 @@
+name: Github Pages
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - shell: bash
+        run: mkdir -p _site
+
+      - uses: jaywcjlove/markdown-to-html-cli@main
+        with:
+          source: README.md
+          output: _site/index.html
+
+      - uses: actions/upload-pages-artifact@v3
+
+    deploy:
+      needs: build
+      permissions:
+        pages: write
+        id-token: write
+      environment:
+        name: github-pages
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/deploy-pages@v4
+
