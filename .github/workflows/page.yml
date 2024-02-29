@@ -22,14 +22,14 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
 
-    deploy:
-      needs: build
-      permissions:
-        pages: write
-        id-token: write
-      environment:
-        name: github-pages
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/deploy-pages@v4
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/deploy-pages@v4
 
